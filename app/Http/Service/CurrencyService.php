@@ -15,12 +15,6 @@ class CurrencyService
         $xmlString = file_get_contents(('https://www.cbr.ru/scripts/XML_daily.asp?date_req=' . date('d/m/Y')));
         $xmlObject = simplexml_load_string($xmlString);
 
-        try {
-            $json = json_encode($xmlObject, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            abort(500);
-        }
-
         $tr = new GoogleTranslate(); // Translates to 'en' from auto-detected language by default
         $tr->setSource('ru'); // Translate from Russian
 
