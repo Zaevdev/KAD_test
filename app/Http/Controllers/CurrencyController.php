@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Currency;
-use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class CurrencyController extends Controller
 {

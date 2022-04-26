@@ -21,12 +21,6 @@ class CurrencyService
             abort(500);
         }
 
-        try {
-            $phpArray = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
-        } catch (\JsonException $e) {
-            abort(500);
-        }
-
         $tr = new GoogleTranslate(); // Translates to 'en' from auto-detected language by default
         $tr->setSource('ru'); // Translate from Russian
 
