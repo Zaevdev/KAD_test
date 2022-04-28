@@ -15,9 +15,6 @@
 
 $router->get('/currencies', 'CurrencyController@index');
 $router->get('/currencies/{id}', 'CurrencyController@show');
-$router->post('/currencies/store', 'CurrencyController@store');
-$router->put('/currencies/update/{id}', 'CurrencyController@update');
-$router->delete('/currencies/delete/{id}', 'CurrencyController@destroy');
 $router->get('/', function () use ($router) {
     return $router->app->version();
 });

@@ -3,12 +3,15 @@
 namespace App\Console\Commands;
 
 use App\Http\Service\CurrencyService;
-use App\Models\Currency;
 use Illuminate\Console\Command;
-use Stichoza\GoogleTranslate\GoogleTranslate;
+use Psr\Log\LoggerInterface;
 
 class UpdateCourse extends Command
 {
+    private CurrencyService $service;
+
+    private LoggerInterface $logger;
+
     /**
      * The name and signature of the console command.
      *
@@ -23,27 +26,28 @@ class UpdateCourse extends Command
      */
     protected $description = 'Update all currencies';
 
-    public CurrencyService $service;
     /**
      * Create a new command instance.
      *
      * @return void
      */
-    public function __construct(CurrencyService $service)
+    public function __construct(CurrencyService $service, LoggerInterface $logger)
     {
-        $this->service = $service;
         parent::__construct();
+        $this->service = $service;
+        $this->logger = $logger;
     }
 
-    /**
-     * Execute the console command.
-     *
-     * @return mixed
-     */
-    public function handle()
+    public function handle(): void
     {
-        $this->service->storeOrUpdate();
+        try {
+            $this->service->insertOrUpdate();
 
-        $this->info('Currencies created!');
+            $this->info('Курсы валют обновлены');
+        } catch (\Throwable $throwable) {
+            $this->info('Ошибка обновления курса валют!');
+
+            $this->logger->error($throwable->getMessage(), $throwable->getTrace());
+        }
     }
 }

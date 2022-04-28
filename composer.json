@@ -8,12 +8,14 @@
         "php": "^8.0",
         "flipbox/lumen-generator": "^9.1",
         "laravel/lumen-framework": "^9.0",
-        "stichoza/google-translate-php": "^4.1"
+        "stichoza/google-translate-php": "^4.1",
+      "ext-simplexml": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",
         "mockery/mockery": "^1.4.4",
-        "phpunit/phpunit": "^9.5.10"
+        "phpunit/phpunit": "^9.5.10",
+        "roave/security-advisories": "dev-latest"
     },
     "autoload": {
         "psr-4": {

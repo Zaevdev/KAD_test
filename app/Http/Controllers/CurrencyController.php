@@ -3,52 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Models\Currency;
+use Illuminate\Http\JsonResponse;
 
 class CurrencyController extends Controller
 {
-
-    public function index(): \Illuminate\Http\JsonResponse
+    public function index(): JsonResponse
     {
-        $currencies = Currency::all();
+        try {
+            $currencies = Currency::all();
 
-        return response()->json($currencies);
+            return response()->json($currencies);
+        } catch (\Throwable) {
+            return response()->json(['message' => 'БД недоступна!'], 400);
+        }
     }
 
-
-    public function create(): void
+    public function show($id): JsonResponse
     {
-        //
-    }
+        try {
+            if (!$currency = Currency::find($id)) {
+                return response()->json(['message' => 'Запрашиваемая валюта не найдена!'], 404);
+            }
 
-
-    public function store(): void
-    {
-        //
-    }
-
-
-    public function show($id): \Illuminate\Http\JsonResponse
-    {
-        $currency = Currency::find($id);
-
-        return response()->json($currency);
-    }
-
-
-    public function edit(): void
-    {
-        //
-    }
-
-
-    public function update(): void
-    {
-        //
-    }
-
-
-    public function destroy(): void
-    {
-        //
+            return response()->json($currency);
+        } catch (\Throwable) {
+            return response()->json(['message' => 'БД недоступна!'], 400);
+        }
     }
 }

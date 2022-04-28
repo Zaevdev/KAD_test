@@ -11,16 +11,15 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('сurrencies', function (Blueprint $table) {
-            $table->id();
-            $table->string('id_cbr');
-            $table->string('name');
-            $table->string('english_name');
-            $table->string('alphabetic_code');
-            $table->string('digit_code');
-            $table->unsignedDouble('rate');
+        Schema::create('currencies', static function (Blueprint $table) {
+            $table->string('id', 8)->primary();
+            $table->string('name', 50)->unique();
+            $table->string('english_name', 50);
+            $table->string('alphabetic_code', 3)->unique();
+            $table->char('digit_code', 3)->unique();
+            $table->decimal('rate', 6, 4, true);
             $table->timestamps();
         });
     }
@@ -30,8 +29,8 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
-        Schema::dropIfExists('сurrencies');
+        Schema::dropIfExists('currencies');
     }
 };

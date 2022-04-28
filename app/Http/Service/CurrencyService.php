@@ -2,39 +2,68 @@
 
 namespace App\Http\Service;
 
+use App\Http\Service\Client\CbrClient;
 use App\Models\Currency;
-use Illuminate\Support\Facades\DB;
+use Exception;
+use JsonException;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 use Throwable;
 
 class CurrencyService
 {
+    private CbrClient $client;
+    private GoogleTranslate $googleTranslate;
 
-    public function storeOrUpdate(): void
+    public function __construct(CbrClient $client, GoogleTranslate $googleTranslate)
     {
-        $xmlString = file_get_contents(('https://www.cbr.ru/scripts/XML_daily.asp?date_req=' . date('d/m/Y')));
-        $xmlObject = simplexml_load_string($xmlString);
+        $this->client = $client;
+        $this->googleTranslate = $googleTranslate;
+    }
 
-        $tr = new GoogleTranslate(); // Translates to 'en' from auto-detected language by default
-        $tr->setSource('ru'); // Translate from Russian
+    /**
+     * @throws JsonException
+     * @throws Exception
+     */
+    public function insertOrUpdate(): void
+    {
+        $currencies = $this->client->getCurrencyRate();
 
-        foreach ($xmlObject->Valute as $arr) {
-            try {
-                Db::beginTransaction();
-                Currency::updateOrCreate(['id_cbr' => $arr->attributes()->ID], [
-                    'id_cbr' => $arr->attributes()->ID,
-                    'name' => $arr->Name,
-                    'english_name' => $tr->translate($arr->Name),
-                    'alphabetic_code' => $arr->CharCode,
-                    'digit_code' => $arr->NumCode,
-                    'rate' => (float)str_replace(',', '.', $arr->Value),
+        $data = $this->getValutesForSave($currencies);
 
-                ]);
-                Db::commit();
-            } catch (Throwable $exception) {
-                Db::rollBack();
-                abort(500);
+        try {
+            Currency::upsert(
+                $data,
+                ['id'],
+                ['rate']
+            );
+        } catch (Exception) {
+            throw new Exception("Не удалось добавить валюты в базу данных!");
+        }
+    }
+
+    /**
+     * @throws Exception
+     */
+    public function getValutesForSave(array $currencies): array
+    {
+        $data = [];
+        $this->googleTranslate->setSource('ru');
+
+        try {
+            foreach ($currencies['Valute'] as $currency) {
+                $data[] = [
+                    'id' => $currency['@attributes']['ID'],
+                    'name' => $currency['Name'],
+                    'english_name' => $this->googleTranslate->translate($currency['Name']),
+                    'alphabetic_code' => $currency['CharCode'],
+                    'digit_code' => $currency['NumCode'],
+                    'rate' => str_replace(',', '.', $currency['Value']) / $currency['Nominal']
+                ];
             }
+
+            return $data;
+        } catch (Throwable) {
+            throw new Exception("Некорректные данные ключей массива при сохранении валют");
         }
     }
 }
