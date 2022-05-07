@@ -4,8 +4,8 @@ namespace App\Http\Service;
 
 use App\Http\Service\Client\CbrClient;
 use App\Models\Currency;
-use Exception;
 use JsonException;
+use RuntimeException;
 use Stichoza\GoogleTranslate\GoogleTranslate;
 use Throwable;
 
@@ -22,7 +22,6 @@ class CurrencyService
 
     /**
      * @throws JsonException
-     * @throws Exception
      */
     public function insertOrUpdate(): void
     {
@@ -31,19 +30,16 @@ class CurrencyService
         $data = $this->getValutesForSave($currencies);
 
         try {
-            Currency::upsert(
+            (new Currency)->upsert(
                 $data,
                 ['id'],
                 ['rate']
             );
-        } catch (Exception) {
-            throw new Exception("Не удалось добавить валюты в базу данных!");
+        } catch (Throwable) {
+            throw new RuntimeException("Не удалось добавить валюты в базу данных!");
         }
     }
 
-    /**
-     * @throws Exception
-     */
     public function getValutesForSave(array $currencies): array
     {
         $data = [];
@@ -63,7 +59,7 @@ class CurrencyService
 
             return $data;
         } catch (Throwable) {
-            throw new Exception("Некорректные данные ключей массива при сохранении валют");
+            throw new RuntimeException("Некорректные данные ключей массива при сохранении валют");
         }
     }
 }

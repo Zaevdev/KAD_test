@@ -12,10 +12,11 @@
       "ext-simplexml": "*"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.6",
         "fakerphp/faker": "^1.9.1",
         "mockery/mockery": "^1.4.4",
         "phpunit/phpunit": "^9.5.10",
-        "roave/security-advisories": "dev-latest"
+        "roave/security-advisories": "dev-master"
     },
     "autoload": {
         "psr-4": {

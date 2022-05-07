@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 
 /**
- * @property false|mixed|\SimpleXMLElement|null $name
- * @property mixed|string|null $english_name
- * @property false|mixed|\SimpleXMLElement|null $alphabetic_code
- * @property false|mixed|\SimpleXMLElement|null $digit_code
- * @property float|mixed $rate
+ * Currency
+ *
+ * @mixin Builder
  */
 class Currency extends Model
 {

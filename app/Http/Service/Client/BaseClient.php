@@ -5,6 +5,7 @@ namespace App\Http\Service\Client;
 use Exception;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
+use RuntimeException;
 
 class BaseClient
 {
@@ -24,7 +25,7 @@ class BaseClient
             $response = $this->client->request('GET', $link);
             return $response->getBody()->getContents();
         } catch (GuzzleException) {
-            throw new Exception("Запрос к $link не доступен.");
+            throw new RuntimeException("Запрос к $link не доступен.");
         }
     }
 }
